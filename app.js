@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const mustacheExpress = require('mustache-express');
 const { clientId, guildId, token } = require('./config.json');
 
 const { Client, GatewayIntentBits } = require('discord.js');
@@ -10,6 +11,20 @@ const client = new Client({
 		         GatewayIntentBits.GuildMessages,
 		         GatewayIntentBits.MessageContent, ],
 });
+
+app.engine("mustache", mustacheExpress());
+app.set('view engine', 'mustache');
+app.set('views', __dirname + '/views');
+
+app.get('/inventory', function(req, res) {
+  var TPL =
+    {title: "My Application",
+     body: "Hello, from Mustache!"   
+    }
+    
+  res.render('inventory', TPL);
+});
+
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`)
